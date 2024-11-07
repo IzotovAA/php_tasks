@@ -1,0 +1,10 @@
+.env
+
+/docker/nginx/log/**
+/docker/db/log/**
+
+/.vscode
+
+app/vendor
+
+*.cache
