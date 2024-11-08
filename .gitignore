@@ -4,6 +4,7 @@
 /docker/db/log/**
 
 /.vscode
+.idea/
 
 app/vendor
 
