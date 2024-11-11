@@ -11,9 +11,9 @@ class Queue
 
     public function addToQueue(string | int $data): void
     {
-        $queueItem = new QueueItem( $data );
+        $queueItem = new QueueItem($data);
 
-        if ($this->first !== null) {
+        if ($this->first !== null && $this->last !== null) {
             $this->last->setNext($queueItem);
         } else {
             $this->first = $queueItem;
