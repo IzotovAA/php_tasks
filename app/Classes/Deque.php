@@ -6,52 +6,84 @@ namespace Classes;
 
 class Deque
 {
-    private string $deque = '';
+    private ?DequeItem $leftElement = null;
+    private ?DequeItem $rightElement = null;
 
-    public function addRight(string $data): void
+    public function addToLeft(string | int $data): void
     {
-        $this->deque = $this->deque . $data;
+        $dequeItem = new DequeItem($data);
+
+        if ($this->leftElement !== null) {
+            $dequeItem->setNextFromLeftSide($this->leftElement);
+            $this->leftElement->setNextFromRightSide($dequeItem);
+            $this->leftElement = $dequeItem;
+        } else {
+            $this->leftElement = $dequeItem;
+            $this->rightElement = $dequeItem;
+        }
     }
 
-    public function addLeft(string $data): void
+    public function addToRight(string | int $data): void
     {
-        $this->deque =  $data . $this->deque;
+        $dequeItem = new DequeItem($data);
+
+        if ($this->rightElement !== null) {
+            $dequeItem->setNextFromRightSide($this->rightElement);
+            $this->rightElement->setNextFromLeftSide($dequeItem);
+            $this->rightElement = $dequeItem;
+        } else {
+            $this->rightElement = $dequeItem;
+            $this->leftElement = $dequeItem;
+        }
     }
 
-    public function getRight(): string
-    {
-        $lastSymbol = mb_substr($this->deque, -1);
-        $tempStore = $this->deque;
-        $this->deque = '';
-        $length = mb_strlen($tempStore);
 
-        for ($i = 0; $i < $length - 1; $i++) {
-            $this->addRight(mb_substr($tempStore, $i, 1));
+    public function getFromLeftSide(): ?DequeItem
+    {
+        if ($this->leftElement !== null && $this->leftElement === $this->rightElement) {
+            $this->leftElement = $this->leftElement->getNextFromLeftSide();
+            $this->rightElement = null;
+        } elseif ($this->leftElement !== null) {
+            $this->leftElement = $this->leftElement->getNextFromLeftSide();
+            $this->leftElement->setNextFromRightSide(null);
         }
 
-        echo 'getRight = ' . $lastSymbol . '<br>';
-
-        return $lastSymbol;
+        return $this->leftElement;
     }
 
-    public function getLeft(): string
+    public function getFromRightSide(): ?DequeItem
     {
-        $lastSymbol = mb_substr($this->deque, 0, 1);
-        $tempStore = $this->deque;
-        $this->deque = '';
-        $length = mb_strlen($tempStore);
-
-        for ($i = 1; $i < $length; $i++) {
-            $this->addRight(mb_substr($tempStore, $i, 1));
+        if ($this->rightElement !== null && $this->leftElement === $this->rightElement) {
+            $this->rightElement = $this->rightElement->getNextFromRightSide();
+            $this->leftElement = null;
+        } elseif ($this->rightElement !== null) {
+            $this->rightElement = $this->rightElement->getNextFromRightSide();
+            $this->rightElement->setNextFromLeftSide(null);
         }
 
-        echo 'getLeft = ' . $lastSymbol . '<br>';
-
-        return $lastSymbol;
+        return $this->rightElement;
     }
 
     public function printDeque(): void
     {
-        echo 'Deque = ' . $this->deque . '<br>';
+        if ($this->leftElement === null) {
+            echo 'Deque is empty' . '<br>';
+            return;
+        }
+
+        $left = $this->leftElement;
+
+        while ($left !== null) {
+            echo $left->getData() . ' ';
+            $left = $left->getNextFromLeftSide();
+        }
+
+        echo '<br>';
+    }
+
+    public function clearDeque(): void
+    {
+        $this->leftElement = null;
+        $this->rightElement = null;
     }
 }
