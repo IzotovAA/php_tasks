@@ -6,24 +6,72 @@ namespace Classes;
 
 class Stack
 {
-    private string $store = '';
+    private ?StackItem $top = null;
 
-    protected function addData(string $data): void
+    public function addToStack(string | int $data): void
     {
-        $this->store = $this->store . $data;
-    }
+        $stackItem = new StackItem($data);
 
-    protected function getData(): string
-    {
-        $lastSymbol = mb_substr($this->store, -1);
-        $tempStore = $this->store;
-        $this->store = '';
-        $lenght = mb_strlen($tempStore);
-
-        for ($i = 0; $i < $lenght - 1; $i++) {
-            $this->addData(mb_substr($tempStore, $i, 1));
+        if ($this->top !== null) {
+            $stackItem->setPrevious($this->top);
         }
 
-        return $lastSymbol;
+        $this->top = $stackItem;
+    }
+
+    public function getFromStack(): ?StackItem
+    {
+        if ($this->top !== null) {
+            $top = $this->top;
+            $this->top = $this->top->getPrevious();
+
+            return $top;
+        }
+
+        return null;
+    }
+
+    public function stringReverse(string $initialString): string
+    {
+        $reverseString = '';
+
+        if ($initialString === '') {
+            return '';
+        }
+
+        $this->clearStack();
+        $length = mb_strlen($initialString);
+
+        for ($i = 0; $i < $length; $i++) {
+            $this->addToStack(mb_substr($initialString, $i, 1));
+        }
+
+        for ($i = 0; $i < $length; $i++) {
+            $reverseString .= $this->getFromStack()->getData();
+        }
+
+        return $reverseString;
+    }
+
+    public function clearStack(): void
+    {
+        $this->top = null;
+    }
+
+    public function printStack(): void
+    {
+        if ($this->top === null) {
+            echo 'Stack is empty' . '<br>';
+            return;
+        }
+
+        $top = $this->top;
+
+        while ($top !== null) {
+            echo $top->getData() . ' ';
+            $top = $top->getPrevious();
+        }
+
+        echo '<br>';
     }
 }
